@@ -1,0 +1,227 @@
+\documentclass[11pt]{article}
+
+\usepackage{fullpage}
+\parindent=0in
+\input{testpoints}
+
+\usepackage{graphicx}
+\usepackage[english]{babel}
+\usepackage[latin1]{inputenc}
+\usepackage{times}
+\usepackage[T1]{fontenc}
+\usepackage{inconsolata}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{hyperref}
+\usepackage{color}
+
+\newcommand{\argmax}{\mathop{\arg\max}}
+\newcommand{\deriv}[1]{\frac{\partial}{\partial {#1}} }
+\newcommand{\dsep}{\mbox{dsep}}
+\newcommand{\Pa}{\mathop{Pa}}
+\newcommand{\ND}{\mbox{ND}}
+\newcommand{\De}{\mbox{De}}
+\newcommand{\Ch}{\mbox{Ch}}
+\newcommand{\graphG}{{\mathcal{G}}}
+\newcommand{\graphH}{{\mathcal{H}}}
+\newcommand{\setA}{\mathcal{A}}
+\newcommand{\setB}{\mathcal{B}}
+\newcommand{\setS}{\mathcal{S}}
+\newcommand{\setV}{\mathcal{V}}
+\DeclareMathOperator*{\union}{\bigcup}
+\DeclareMathOperator*{\intersection}{\bigcap}
+\DeclareMathOperator*{\Val}{Val}
+\newcommand{\mbf}[1]{{\mathbf{#1}}}
+\newcommand{\eq}{\!=\!}
+
+\DeclareMathOperator*{\argmin}{arg\,min}
+\DeclareMathOperator*{\sign}{sign}
+
+
+\begin{document}
+
+{\centering
+  \rule{6.3in}{2pt}
+  \vspace{1em}
+  {\Large
+    CS689: Machine Learning - Spring 2023 \\
+    Homework 2\\
+  }
+  \vspace{1em}
+
+  \vspace{0.1em}
+  \rule{6.3in}{1.5pt}
+}
+\vspace{1pc}
+
+
+\textbf{Getting Started:} This assignment consists of two parts. Part 1 consists of written problems, derivations and coding warm-up problems, while Part 2 consists of implementation and experimentation problems. You should first complete the derivation and written problems in Part 1. You should then start on the implementation and experimentation problems in Part 2 of the assignment. The implementation and experimentation problems must be coded in Python 3.8+. Download the assignment archive from Moodle and unzip the file. The data files for this assignment are in the \verb|data| directory. Code templates are in the \verb|code| directory. The only modules you are allowed to use in your implementation are those already imported in the code templates.\\
+
+\textbf{Submission and Due Dates:} Part 1 is due Monday, Mar 27.  Part 2 is due Friday, Mar 31.  Sorry for the acceleration but it's to give some time before the midterm.
+For Part 1, please submit a PDF with your solutions to Gradescope.
+(If you handwrite, please write neatly.)
+For Part 2, please submit both a PDF and code (as zip file) to Gradescope.
+Late work will only be accepted in accordance with the course's late homework policy.\\
+
+\textbf{Academic Honesty Reminder:} Homework assignments are individual work. Being in possession of another student's solutions, code, code output, or plots/graphs for any reason is considered cheating. Sharing your solutions, code, code output, or plots/graphs with other students for any reason is considered cheating. Copying solutions from external sources (books, web pages, etc.) is considered cheating. Collaboration indistinguishable from copying is considered cheating. Posting your code to public repositories like GitHub (during or after the course) is not allowed.  Manual and algorithmic cheating detection is used in this class. Any detected cheating will result in a grade of 0 on the assignment for all students involved, and potentially a grade of F in the course. 
+\\
+
+\textbf{Part 1: Written Problems and Derivations}
+
+\begin{problem}{8} Consider the regression loss function $L_{\delta}(r)$ for $\delta>0$ shown below when answering the following questions. Note that $r$ denotes the residual $r=y-f_{\theta}(\mbf{x})$.
+    $$L_{\delta}(r) =
+        \begin{cases}
+            \frac{1}{2}{r^2} & \text{for } |r| \le \delta, \\
+            \delta (|r| - \frac{1}{2}\delta), & \text{otherwise.}
+         \end{cases}
+    $$
+
+    \newpart{4} ~~Is $L_{\delta}(r)$ a differentiable function of $r\in\mathbb{R}$? Explain your answer.\\
+    
+    \newpart{4} ~~Why might we consider using this regression loss function instead of the squared loss? Why might we consider using this regression loss function instead of the epsilon insensitive loss?   
+    
+\end{problem}
+
+\begin{problem}{3} Let's examine a trivial but illustrative version of L2 regularization. Consider the L2-regularized risk minimization problem for learning linear regression when there's only one feature ($x \in \mathbb{R}$) and no bias term, so there is only one parameter $w$:
+
+\begin{align*}    
+    \hat{w}&=\argmin_{w}\;\left( \left(\frac{1}{N}\sum_{n=1}^N (y_n-wx_n)^2 \right)+ \frac{\lambda}{2N} w^2 \right)
+\end{align*}\\
+
+\newpart{1} ~~What is the derivative of the regularized risk? Show your work.
+
+\newpart{1} ~~What is the closed-form solution for the optimal parameter? Show your work.
+
+\newpart{1} Based on this, give an intuitive explanation for what $\lambda$ does.  $\lambda$ is called the regularization hyperparameter or regularization constant.
+    
+\end{problem}
+
+
+\begin{problem}{8} OK, let's generalize to full linear regression. Consider the L2-regularized risk minimization problem shown below for learning the linear regression model. 
+
+\begin{align*}    
+    \hat{\theta}&=\argmin_{\theta}\;\left( \left(\frac{1}{N}\sum_{n=1}^N (y_n-(\mbf{x}_n\mbf{w}+b))^2 \right)+ \frac{\lambda}{2N}\Vert\mbf{w}\Vert_2^2 \right)
+\end{align*}\\
+
+\newpart{4} Derive the gradient of the regularized risk for this problem. Show your work.\\
+
+
+\newpart{4} Like the unregularized version of the problem, this minimization problem has a closed-form solution for the optimal parameters $\hat{\theta}$.
+Derive this closed-form solution. Show your work.
+    
+\end{problem}
+
+\begin{problem}{5} Consider the function $f(x)=x^2$. Using a direct application of the definition of convexity, show that $f(x)$ is convex. 
+\end{problem}
+
+\begin{problem}{6}
+In lecture we discussed the perceptron loss,
+\[ L(z) = \begin{cases} -z &\text{ if } z<0 \\ 0 &\text{ otherwise} \end{cases} \]
+It is a neat way to justify the classic perceptron algorithm as SSGD, it's convex, and it looks a bit like hinge loss.  %It's convex, so the empirical risk $\sum_n L(y_n \theta^T \mbf{x}_n)$ is convex as well.
+But it has odd properties from the perspective of global optimality. \\
+
+\newpart{2} Consider one-feature classification without a bias term: $h(x) = \text{sign}(w x)$. (This is a pretty poor model: $x=0$ is always the decision boundary.)  
+Consider the following training dataset 
+$\mathcal{D}^{tr} = \mathcal{R} \cup \mathcal{L} \cup \{(+1,-1)\}$:
+\begin{itemize}
+\item $\mathcal{R}$ = A zillion points where $x>10$ and $y=+1$ 
+\item $\mathcal{L}$ = A zillion points where $x< -10$ and $y=-1$
+\item $x=+1$, $y=-1$
+\end{itemize}
+
+What is the optimal $w$ under perceptron loss?  Is it a desirable model? \\
+
+\newpart{2} Consider the general case ($\mbf{x} \in \mathbb{R}$) again. When the training data is linearly separable, that means there exists a classifier $\theta$ where for all training points $(\mbf{x}_n, y_n)$, $y_n \mbf{\theta}^T \mbf{x}_n > 0$. 
+Now consider the case where the training data is not linearly separable. Part (a) was a special case of this.
+What is the set of optimal $\theta$? Explain why. \\
+
+\newpart{2} What is the subdifferential of the perceptron loss, $\partial L(z)$? \\
+
+
+
+\end{problem}
+
+%\begin{problem}{5}
+%Suppose there exists real constants a, b, c, d such that the piece-wise function shown below is continuous and convex. What is the subdifferential function $\partial f(x)$ of this function? Show your work.  
+%
+%$$f(x) = 
+%\begin{cases}
+%  ax^2 + bx +c & \mbox{ ... }x\leq 0\\
+%d|x|+c & \mbox{ ... } x>0 
+%\end{cases}$$ 
+%
+%
+%\end{problem}
+
+\begin{problem}{20} In addition to the use of basis expansion to achieve non-linearity, many models based on inner products can be made non-linear through the application of kernel functions. A kernel function  $\mathcal{K}$ can often compute the inner product between two basis expanded vectors
+ $\mathcal{K}(\mbf{x},\mbf{x}')=  [\phi(\mbf{x})]^T\phi(\mbf{x}')$ without computing the basis expansion explicitly, making them more computationally efficient. This also allows for the use of non-finite dimensional basis expansions.\\
+
+The linear classifier can be ``kernelized" using a   
+discriminant function of the form $g_{\theta}(\mbf{x})=b+\sum_{n=1}^N \alpha_n \mathcal{K}(\mbf{x}_n,\mbf{x})$ where the parameters are $\theta=[\alpha_1,...,\alpha_N,b]$. The terms $\mbf{x}_n$ represent the training data cases. Note that unlike other models that we have seen to date, this model needs access to both the learned parameters and the training data used to learn the parameters to make predictions since the discriminant function depends on the training data cases $\mbf{x}_n$. Also note that the number of parameters in the model does not vary with the dimension of the training data $D$. Instead, it varies with number of trainging data cases $N$.\\
+
+We can form a regularized risk function for this model by combining the kernelized linear classifier with the logistic loss and a kernelized regularizer as shown below. This model is referred to as \textit{kernel logistic regression} or KLR.
+
+$$R(g_{\theta},\mathcal{D}) = \left(\frac{1}{N}\sum_{n=1}^N \log\left(1+\exp(-y_ng_{\theta}(\mbf{x}_n))\right) \right)
++\left(\frac{\lambda}{2N}\sum_{n=1}^N\sum_{m=1}^N\alpha_n\alpha_m \mathcal{K}(\mbf{x}_n,\mbf{x}_m)\right)$$
+\vspace{0.5em}
+
+\newpart{12} ~~Derive the gradient of the regularized risk function shown above. Show your work.\\
+
+\newpart{4} One of the most widely used kernels is the radial basis function (RBF) kernel defined as $\mathcal{K}_{RBF}(\mbf{x},\mbf{x}') = \exp(-\beta\Vert \mbf{x}-\mbf{x}'\Vert^2_2)$ where $\beta$ is a kernel hyper-parameter.
+Using the first two data cases in the supplied training data set, compute and report the values $\mathcal{K}_{RBF}(\mbf{x}_1,\mbf{x}_1)$, $\mathcal{K}_{RBF}(\mbf{x}_1,\mbf{x}_2)$, and $\mathcal{K}_{RBF}(\mbf{x}_2,\mbf{x}_2)$ using $\beta=0.1$.\\
+
+\newpart{2} Using the first two data cases in the supplied training data set, the RBF kernel with $\beta=0.1$, the regularization strength $\lambda=0.1$, and the parameter vector $\theta=[1,1,1]$, compute and report the value of the regularized risk.\\
+
+\newpart{2} Using the first two data cases in the supplied training data set, the RBF kernel with $\beta=0.1$, the regularization strength $\lambda=0.1$, and the parameter vector $\theta=[1,1,1]$, compute and report the gradient of the regularized risk.\\
+
+\end{problem}
+
+\vspace{1em}
+\textbf{Part 2: Implementation and Experimentation}
+
+\begin{problem}{50} ~In this problem, you will implement learning for the RBF kernel logistic regression classifier introduced in Question 5. We will use the model to build and test a heart disease prediction model.\\
+
+To begin, implement a Python class for the model starting from the code in \verb|klr.py|. This code includes a constructor that stores the values of $\beta$, $\lambda$ and the training data set Xtr. Your class must implement the methods indicated below. You can include any additional methods that you need, but please add them after the required methods. You can change the provided function signatures, so long as the required methods are consistent with the descriptions bellow. Note that for your implementation to be computationally efficient, you will need to cache the computation of kernel values during training. How you implement this functionality is up to you. 
+    
+\begin{itemize}
+
+\item \verb|compute_kernel|: Takes two input matrices $\mbf{X}$ and $\mbf{X}'$ as input. Computes the kernel matrix $\mbf{K}$ such that $\mbf{K}_{nm} = \mathcal{K}_{RBF}(\mbf{x}_n,\mbf{x}'_m)$ using the stored value of $\beta$.   
+
+\item \verb|discriminant|: Takes an array of parameter values $\theta$ and an array of inputs $\mbf{X}$. Returns the value of the discriminant function $g_{\theta}(\mbf{x})$ using the stored value of $\beta$ and the stored training data.
+
+\item   \verb|predict|: Takes an array of parameter values $\theta$ and an array of inputs $\mbf{X}$. Returns an array of predicted outputs $\hat{\mbf{Y}}$ computed using the stored value of $\beta$ and the stored training data.
+
+\item  \verb|risk|: Takes an array of parameter values $\theta$, an array of inputs $\mbf{X}$, an array of outputs $\mbf{Y}$. Computes the value of the risk using the stored values of $\beta$ and $\lambda$.
+
+\item  \verb|risk_grad|: Takes an array of parameter values $\theta$, an array of inputs $\mbf{X}$, an array of outputs $\mbf{Y}$. Computes the gradient of the  risk using the stored values of $\beta$ and $\lambda$.
+
+\item  \verb|fit|: Takes an array of inputs $\mbf{X}$ and an array of outputs $\mbf{Y}$. Fits the model using the stored values of $\beta$ and $\lambda$. The optimizer we will use is \verb|scipy.optimize.minimize| with the L-BFGS-B method and tol=1e-6. Use the stored values of $\beta$ and $\lambda$ during training. Use the $\theta=[0,...,0]$ as the starting point for the optimization.
+
+\end{itemize}
+ 
+\newpart{5} Using $\beta=0.1$ and your implementation of the  \verb|compute_kernel| method, compute and report the kernel matrix between the first three training data cases, and the first four test data cases. The result will be a $3\times 4$ matrix. \\
+
+\newpart{5} Using $\beta=0.1$, compute and report the value of the  \verb|discriminant| function for the first four test cases using a training data set consisting of the first three training cases. As the parameter vector, use $\theta=[1,1,1,-0.5]$. The result will be a length 4 vector.\\
+
+\newpart{5} Using $\beta=0.1$, compute and report the value of the  \verb|predict| function for the first four test cases using a training data set consisting of the first three training cases. As the parameter vector, use $\theta=[1,1,1,-0.5]$. The result will be a length 4 vector.\\
+
+\newpart{5} Using $\beta=0.1$ and $\lambda=0.1$, compute and report the value of the  \verb|risk| function using a training data set consisting of the first three training cases. As the parameter vector, use $\theta=[1,1,1,-0.5]$. The result will be a single real number.\\
+
+\newpart{5} Using $\beta=0.1$ and $\lambda=0.1$, compute and report the value of the  \verb|risk_grad| function using a training data set consisting of the first three training cases. As the parameter vector, use $\theta=[1,1,1,-0.5]$. The result will be a length 4 vector.\\
+
+\newpart{5} Using $\beta=0.1$ and $\lambda=0.1$, use the \verb|fit| function to learn the model using the first 10 training data cases. Report the value of the optimal model parameters $\hat{\theta}$. The result will be a length 11 vector.\\
+
+\newpart{5} Using $\beta=0.1$ and $\lambda=0.1$, use \verb|fit| to learn the model on all of the training data. Using the optimal model parameters $\theta$, compute and report the classification error on the training data set and the test data set.\\
+
+\newpart{5} This model has two hyper-parameters $\beta$ and $\lambda$. Describe in words (not code) a validation set-based procedure to select the values of these hyper-parameters. Make sure to mention the following: (1) your approach to using the available data including the split percentages used, (2) the range of values that you searched over for both $\beta$ and $\lambda$ and how you selected this range, (3) the criterion you used to select the best hyper-parameter values. Also explain why you selected this procedure.\\
+
+\newpart{5} ~Implement and run your hyper-parameter selection procedure. Produce one or more plots showing how the training set error and the validation set error vary as a function of $\beta$ and $\lambda$. Explain your plots. (Hint: for a well implemented model, your hyper-parameter experiment should take no more than a few minutes to complete.)\\
+
+\newpart{5} Lastly, report the values of $\beta$ and $\lambda$ that you found to be optimal. Also report the value of the heart disease classification error on the training and test sets when the model is learned using the hyper-parameters you found to be optimal. 
+\end{problem}
+
+
+
+
+\showpoints
+\end{document}
