@@ -45,15 +45,14 @@ rnn_best_loss=float("inf")
 best_rnn_model=None
 for hidden_size in hidden_sizes:
     for num_layer in num_layers:
-
-        model = RNNModel(input_size=13, hidden_size=hidden_size, num_layers=num_layers, output_size=1,embedding_size=embedding_size).to(device)
+        model = RNNModel(input_size=13, hidden_size=hidden_size, num_layers=num_layer, output_size=1,embedding_size=embedding_size).to(device)
         rnn=HelperClass(Xtr,Ytr,model,num_epochs)
         rnn_train_loss=rnn.trainer()
         if rnn_train_loss<rnn_best_loss:
             best_rnn_model=model
             rnn_best_loss=rnn_train_loss
 print(best_rnn_model.__repr__())
-print(mlp_best_loss)
+print(rnn_best_loss)
 
 output_vocab_size=1
 num_features=7
